@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css.css">
+  <title>CRUD de Materias</title>
+</head>
+<body>
+  <h1>CRUD de Materias</h1>
+
+  <div id="formContainer">
+    <h2>Agregar Materia</h2>
+    <form id="materiaForm">
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" required>
+
+      <label for="fechaInicio">Fecha de Inicio de Inscripciones:</label>
+      <input type="date" id="fechaInicio" required>
+
+      <label for="alumnosRequeridos">Alumnos Requeridos:</label>
+      <input type="number" id="alumnosRequeridos" required>
+
+      <label for="maestro">Maestro:</label>
+      <input type="text" id="maestro" required>
+
+      <button type="button" onclick="agregarMateria()">Agregar Materia</button>
+    </form>
+  </div>
+
+  <div id="tableContainer">
+    <h2>Listar Materias</h2>
+    <table id="materiasTable">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Fecha de Inicio de Inscripciones</th>
+          <th>Alumnos Requeridos</th>
+          <th>Maestro</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="materiasBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    // CRUD operations for Materias using localStorage
+
+    function agregarMateria() {
+      let nombre = document.getElementById('nombre').value;
+      let fechaInicio = document.getElementById('fechaInicio').value;
+      let alumnosRequeridos = document.getElementById('alumnosRequeridos').value;
+      let maestro = document.getElementById('maestro').value;
+
+      if (nombre && fechaInicio && alumnosRequeridos && maestro) {
+        let nuevaMateria = {
+          nombre: nombre,
+          fechaInicio: fechaInicio,
+          alumnosRequeridos: alumnosRequeridos,
+          maestro: maestro
+        };
+
+        let materias = JSON.parse(localStorage.getItem('materias')) || [];
+        materias.push(nuevaMateria);
+        localStorage.setItem('materias', JSON.stringify(materias));
+
+        mostrarMaterias();
+        limpiarFormulario();
+
+        alert('Materia agregada correctamente.');
+      } else {
+        alert('Por favor, completa todos los campos del formulario.');
+      }
+    }
+
+    function mostrarMaterias() {
+      let materias = JSON.parse(localStorage.getItem('materias')) || [];
+      let tableBody = document.getElementById('materiasBody');
+
+      // Limpiar la tabla antes de volver a mostrar las materias
+      tableBody.innerHTML = '';
+
+      materias.forEach(function (materia, index) {
+        let row = tableBody.insertRow();
+
+        let cellNombre = row.insertCell(0);
+        let cellFechaInicio = row.insertCell(1);
+        let cellAlumnosRequeridos = row.insertCell(2);
+        let cellMaestro = row.insertCell(3);
+        let cellAcciones = row.insertCell(4);
+
+        cellNombre.innerHTML = materia.nombre;
+        cellFechaInicio.innerHTML = materia.fechaInicio;
+        cellAlumnosRequeridos.innerHTML = materia.alumnosRequeridos;
+        cellMaestro.innerHTML = materia.maestro;
+
+        let editarBtn = document.createElement('button');
+        editarBtn.innerHTML = 'Editar';
+        editarBtn.addEventListener('click', function () {
+          editarMateria(index);
+        });
+
+        let eliminarBtn = document.createElement('button');
+        eliminarBtn.innerHTML = 'Eliminar';
+        eliminarBtn.addEventListener('click', function () {
+          eliminarMateria(index);
+        });
+
+        cellAcciones.appendChild(editarBtn);
+        cellAcciones.appendChild(eliminarBtn);
+      });
+    }
+
+    function limpiarFormulario() {
+      document.getElementById('nombre').value = '';
+      document.getElementById('fechaInicio').value = '';
+      document.getElementById('alumnosRequeridos').value = '';
+      document.getElementById('maestro').value = '';
+    }
+
+    function editarMateria(index) {
+      let materias = JSON.parse(localStorage.getItem('materias')) || [];
+      let materia = materias[index];
+
+      // Puedes implementar la lógica para llenar el formulario con los datos de la materia seleccionada.
+      // En este ejemplo, simplemente mostraremos una alerta con la información.
+      alert(`Editar Materia:\nNombre: ${materia.nombre}\nFecha de Inicio: ${materia.fechaInicio}\nAlumnos Requeridos: ${materia.alumnosRequeridos}\nMaestro: ${materia.maestro}`);
+    }
+
+    function eliminarMateria(index) {
+      let confirmacion = confirm('¿Seguro que quieres eliminar esta materia?');
+
+      if (confirmacion) {
+        let materias = JSON.parse(localStorage.getItem('materias')) || [];
+        materias.splice(index, 1);
+        localStorage.setItem('materias', JSON.stringify(materias));
+
+        mostrarMaterias();
+
+        alert('Materia eliminada correctamente.');
+      }
+    }
+
+    // Mostrar las materias al cargar la página
+    mostrarMaterias();
+  </script>
+</body>
+</html>
